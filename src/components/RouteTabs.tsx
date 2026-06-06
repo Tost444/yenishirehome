@@ -70,28 +70,26 @@ export default function RouteTabs() {
       <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Tabs */}
-        <div className="flex mb-8 md:mb-16 w-full overflow-hidden -mx-4 px-4 sm:mx-0 sm:px-0">
-          <div className="flex overflow-x-auto hide-scrollbar w-full pb-4 -mb-4 lg:justify-center">
-            <div className="flex flex-nowrap gap-2 bg-black/40 backdrop-blur-md p-1.5 md:p-2 rounded-[1.5rem] md:rounded-full shadow-2xl border border-white/10 min-w-max">
-              {routesData.map((route) => (
-                <button
-                  key={route.id}
-                  onClick={() => setActiveTabId(route.id)}
-                  className={`relative flex-shrink-0 px-5 py-2.5 md:px-6 md:py-3 text-sm md:text-base font-medium rounded-xl md:rounded-full transition-colors ${
-                    activeTabId === route.id ? 'text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  {activeTabId === route.id && (
-                    <motion.div
-                      layoutId="routeTab"
-                      className="absolute inset-0 bg-emerald-600 rounded-xl md:rounded-full shadow-lg"
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10 font-serif tracking-wide whitespace-nowrap">{route.label[lang] || route.label.tr}</span>
-                </button>
-              ))}
-            </div>
+        <div className="flex mb-8 md:mb-16 w-full justify-center">
+          <div className="flex flex-wrap justify-center gap-2 bg-black/40 backdrop-blur-md p-1.5 md:p-2 rounded-[1.5rem] md:rounded-[2rem] shadow-2xl border border-white/10">
+            {routesData.map((route) => (
+              <button
+                key={route.id}
+                onClick={() => setActiveTabId(route.id)}
+                className={`relative px-4 py-2 md:px-6 md:py-3 text-sm md:text-base font-medium rounded-xl md:rounded-full transition-colors ${
+                  activeTabId === route.id ? 'text-white' : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {activeTabId === route.id && (
+                  <motion.div
+                    layoutId="routeTab"
+                    className="absolute inset-0 bg-emerald-600 rounded-xl md:rounded-full shadow-lg"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 font-serif tracking-wide whitespace-nowrap">{route.label[lang] || route.label.tr}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -143,6 +141,7 @@ function LocationCard({ location, index, isSummary }: { location: AppRouteLocati
   const [scrollLeft, setScrollLeft] = useState(0);
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return;
     setIsDragging(false);
     if (scrollRef.current) {
       setStartX(e.pageX - scrollRef.current.offsetLeft);
@@ -151,12 +150,14 @@ function LocationCard({ location, index, isSummary }: { location: AppRouteLocati
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
-    if (e.buttons !== 1) return;
-    setIsDragging(true);
+    if (e.pointerType !== 'mouse' || e.buttons !== 1) return;
     if (scrollRef.current) {
       e.preventDefault();
       const x = e.pageX - scrollRef.current.offsetLeft;
       const walk = (x - startX) * 2;
+      if (Math.abs(x - startX) > 5) {
+        setIsDragging(true);
+      }
       scrollRef.current.scrollLeft = scrollLeft - walk;
     }
   };
@@ -272,9 +273,10 @@ function LocationCard({ location, index, isSummary }: { location: AppRouteLocati
                    draggable={false}
                    className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-1000 opacity-90 group-hover/img:opacity-100"
                  />
-                 <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-end p-2 md:p-4 pointer-events-none opacity-80 group-hover/img:opacity-100 transition-opacity">
+                 <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-end p-2 md:p-4 pointer-events-none opacity-100 md:opacity-0 md:group-hover/img:opacity-100 transition-opacity">
                    <div className="bg-black/60 backdrop-blur-md p-2 md:p-3 rounded-full flex items-center justify-center border border-white/20 shadow-2xl group-hover/img:scale-110 transition-transform">
                      <ZoomIn className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                     <span className="text-white text-xs ml-2 font-medium md:hidden drop-shadow-md tracking-wide">{t.clickToZoom}</span>
                    </div>
                  </div>
                </div>
