@@ -1,0 +1,6 @@
+{
+  "name": "Yenishirehome",
+  "description": "Modern tourist guide site for Isparta Yenişarbademli",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
